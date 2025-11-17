@@ -112,7 +112,7 @@
                 parameters:
                 [
                 string(name: &apos;infrastructure_git_hash&apos;, value:params.infrastructure_git_hash),
-                string(name: &apos;study_id&apos;, value:params.study_id),
+                string(name: &apos;phs_number&apos;, value:params.study_id),
                 string(name: &apos;consent_group_tag&apos;, value:&quot;${consent_group_tag}&quot;),
                 string(name: &apos;chrom_number&apos;, value:&quot;${chrom_number}&quot;)
                 ]
