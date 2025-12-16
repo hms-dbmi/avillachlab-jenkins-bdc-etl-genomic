@@ -35,11 +35,10 @@ do
 	aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/${phsnum}.chr${i}.annotated.hpds.vcf.gz genomiccounts/chr${i}/${phsnum}.chr${i}.annotated.hpds.vcf.gz &amp;
     wait
 	
-	bgzip -d --threads 40 genomiccounts/chr${i}/${phsnum}.chr${i}.annotated.hpds.vcf.gz &amp;
+	gzip -d genomiccounts/chr${i}/${phsnum}.chr${i}.annotated.hpds.vcf.gz &amp;
 	wait
-    #creates files for the headers, then the lines which are not headers and have an occurence of the word severity indicating they are non-modifiers
 	grep &quot;#&quot; genomiccounts/chr${i}/${phsnum}.chr${i}.annotated.hpds.vcf &gt;  genomiccounts/chr${i}/${phsnum}.chr${i}.headers.vcf &amp;
-	grep -v &quot;#&quot; genomiccounts/chr${i}/${phsnum}.chr${i}.annotated.hpds.vcf | grep -i &quot;severity&quot; &gt;  genomiccounts/chr${i}/${phsnum}.chr${i}.coding_consequences.vcf &amp;
+	grep -v &quot;#&quot; genomiccounts/chr${i}/${phsnum}.chr${i}.annotated.hpds.vcf | sort -u | grep -i &quot;severity&quot; &gt;   genomiccounts/chr${i}/${phsnum}.chr${i}.coding_consequences.vcf &amp;
 	wait
 
 	cat genomiccounts/chr${i}/${phsnum}.chr${i}.headers.vcf &gt;&gt; genomiccounts/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf &amp;
@@ -47,12 +46,14 @@ do
 	cat genomiccounts/chr${i}/${phsnum}.chr${i}.coding_consequences.vcf &gt;&gt; genomiccounts/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf &amp;
 	wait
 
-	bgzip -fi --threads 40 genomiccounts/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf  &amp;
+	gzip -fk genomiccounts/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf  &amp;
 	wait
 	
 	aws s3 cp genomiccounts/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz &amp;
 	wait
 
+	rm -f -r genomiccounts/chr${i}/ &amp;
+	wait
 done</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>

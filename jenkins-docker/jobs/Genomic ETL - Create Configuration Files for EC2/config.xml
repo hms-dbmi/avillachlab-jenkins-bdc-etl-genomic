@@ -4,7 +4,7 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.34">
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@332.va_1ee476d8f6d">
       <autoRebuild>false</autoRebuild>
       <rebuildDisabled>false</rebuildDisabled>
     </com.sonyericsson.rebuild.RebuildSettings>
@@ -15,7 +15,7 @@
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>phs_number</name>
+          <name>study_id</name>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -26,10 +26,19 @@
           <name>chrom_number</name>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>freeze_number</name>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>9</string>
+              <string>10</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@4.12.1">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@5.0.2">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -57,7 +66,10 @@
 cd genomic-etl-deployment-s3-bucket
 
 terraform init
-terraform apply  -auto-approve -var &quot;output_s3_bucket=${stack_s3_bucket}&quot; -var &quot;study_id=${phs_number}&quot; -var &quot;consent_group_tag=${consent_group_tag}&quot; -var &quot;chrom_number=${chrom_number}&quot;
+terraform workspace select ${study_id}${consent_group_tag}-${chrom_number} || terraform workspace new ${study_id}${consent_group_tag}-${chrom_number}
+terraform apply  -auto-approve -var=&quot;freeze_number=${freeze_number}&quot; -var &quot;output_s3_bucket=${stack_s3_bucket}&quot; -var &quot;study_id=${study_id}&quot; -var &quot;consent_group_tag=${consent_group_tag}&quot; -var &quot;chrom_number=${chrom_number}&quot; &amp;
+wait
+
 </command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>

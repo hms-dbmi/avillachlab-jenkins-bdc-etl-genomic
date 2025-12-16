@@ -1,0 +1,137 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@332.va_1ee476d8f6d">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>ROLE_ARN</name>
+          <defaultValue>$arn_role_app</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ami_id</name>
+          <defaultValue>ami-00d6822f1b6699840</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>infrastructure_git_hash</name>
+          <defaultValue>genomic-etl-nextflow</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>deployment_git_hash</name>
+          <defaultValue>88f8d86caa826c71593b9e61eb06d35a67a1c1ec</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>input_s3_bucket</name>
+          <defaultValue>nih-nhlbi-topmed-freeze9-batch5-phs001607-c5/phg001629.v1.TOPMed_WGS_IPF_v3_frz9.genotype-calls-vcf.WGS_markerset_grc38.c5.HMB-IRB-NPU</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>output_s3_bucket</name>
+          <defaultValue>avillach-biodatacatalyst-deployments-3drb48r</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>study_id</name>
+          <defaultValue>phs001607</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>consent_group_tag</name>
+          <defaultValue>.c1</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>chrom_number</name>
+          <defaultValue>21</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>study_consent_group</name>
+          <defaultValue>c1</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>study_name</name>
+          <defaultValue>IPF</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>terminate_on_completion</name>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>input_s3_account</name>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>600168050588</string>
+              <string>714862078411</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>freeze_number</name>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>9</string>
+              <string>10</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>az</name>
+          <defaultValue>us-east-1a</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@5.0.2">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/hms-dbmi/avillachlab-secure-infrastructure</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>${infrastructure_git_hash}</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="empty-list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+if ($terminate_on_completion)
+then
+export fleetId=`aws ec2 describe-spot-fleet-requests --region us-east-1 --query &quot;SpotFleetRequestConfigs[?SpotFleetRequestConfig.LaunchSpecifications[?TagSpecifications[?Tags[?Value == &apos;Genomic ETL Annotation Pipeline - ${study_id}${consent_group_tag} Chromosome ${chrom_number}&apos;]]] &amp;&amp; (SpotFleetRequestState == &apos;active&apos; || SpotFleetRequestState==&apos;open&apos;)].SpotFleetRequestId&quot; --output text` &amp;&amp; echo fleet id ${fleetId}
+export VOLUME_ID=$(aws ec2 describe-volumes --region=us-east-1 --filters Name=&apos;tag:label&apos;,Values=${study_id}${consent_group_tag}.chr${chrom_number} --query &quot;Volumes[*].VolumeId&quot; --output text) &amp;&amp; echo &quot;volume id is $VOLUME_ID&quot;
+aws ec2 cancel-spot-fleet-requests --region us-east-1 --spot-fleet-request-ids ${fleetId} --terminate-instances || $(echo &apos;could not terminate&apos; &amp;&amp; exit 255)
+sleep 300
+aws ec2 detach-volume --region us-east-1 --volume-id $VOLUME_ID || echo &apos;volume already detached&apos; 
+aws ec2 delete-volume --region us-east-1 --volume-id $VOLUME_ID &amp;&amp; echo &apos;volume deleted&apos;
+fi</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
