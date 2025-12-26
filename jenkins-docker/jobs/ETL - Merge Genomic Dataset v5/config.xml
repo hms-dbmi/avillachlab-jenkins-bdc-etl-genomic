@@ -1,0 +1,138 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>dataset1_s3_location</name>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>dataset2_s3_location</name>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>output_s3_location</name>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>temp_s3_location</name>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@5.2.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/hms-dbmi/pic-sure-hpds</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>ALS-6330</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="empty-list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>true</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>JDK-18</jdk>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Maven>
+      <targets>clean install -Dmaven.test.skip=true</targets>
+      <mavenName>Maven 3.9.5</mavenName>
+      <usePrivateRepository>false</usePrivateRepository>
+      <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+      <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+      <injectBuildVariables>false</injectBuildVariables>
+    </hudson.tasks.Maven>
+    <hudson.tasks.Shell>
+      <command>### assume etl role
+aws sts assume-role --duration-seconds 3000 --role-arn arn:aws:iam::736265540791:role/dbgap-etl --role-session-name &quot;s3-test&quot; &gt; assume-role-output.txt
+
+export AWS_ACCESS_KEY_ID=`grep AccessKeyId assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+export AWS_SECRET_ACCESS_KEY=`grep SecretAccessKey assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+export AWS_SESSION_TOKEN=`grep SessionToken assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+
+i=&quot;X&quot;
+find data/ -type f -exec rm -rf {} \;
+
+mkdir -p data/dataset1
+mkdir -p data/dataset2
+mkdir -p data/output
+
+echo &quot;${dataset1_s3_location}${i}/&quot;
+echo &quot;${dataset2_s3_location}${i}/&quot;
+
+aws s3 sync &quot;${dataset1_s3_location}${i}/&quot; data/dataset1/
+aws s3 sync &quot;${dataset2_s3_location}${i}/&quot; data/dataset2/
+
+ls -l data/dataset1
+ls -l data/dataset2
+
+java -Xmx32g -jar docker/pic-sure-hpds-etl/GenomicDatasetMergerRunner-jar-with-dependencies.jar data/dataset1/ data/dataset2/ data/output/
+
+ls -l data/output
+
+### assume etl role
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_SESSION_TOKEN
+aws sts assume-role --duration-seconds 3600 --role-arn arn:aws:iam::736265540791:role/dbgap-etl --role-session-name &quot;s3-test&quot; &gt; assume-role-output.txt
+export AWS_ACCESS_KEY_ID=`grep AccessKeyId assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+export AWS_SECRET_ACCESS_KEY=`grep SecretAccessKey assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+export AWS_SESSION_TOKEN=`grep SessionToken assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+
+aws s3 sync data/output/ &quot;${temp_s3_location}${i}/&quot;
+
+for i in $(seq 1 22); do
+  find data/ -type f -exec rm -rf {} \;
+
+  mkdir -p data/dataset1
+  mkdir -p data/dataset2
+  mkdir -p data/output
+
+  echo &quot;${dataset1_s3_location}${i}/&quot;
+  echo &quot;${dataset2_s3_location}${i}/&quot;
+
+  aws s3 sync &quot;${dataset1_s3_location}${i}/&quot; data/dataset1/
+  aws s3 sync &quot;${dataset2_s3_location}${i}/&quot; data/dataset2/
+
+  ls -l data/dataset1
+  ls -l data/dataset2
+
+  java -Xmx32g -jar docker/pic-sure-hpds-etl/GenomicDatasetMergerRunner-jar-with-dependencies.jar data/dataset1/ data/dataset2/ data/output/
+
+  ls -l data/output
+
+  ### assume etl role
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset AWS_SESSION_TOKEN
+  aws sts assume-role --duration-seconds 3600 --role-arn arn:aws:iam::736265540791:role/dbgap-etl --role-session-name &quot;s3-test&quot; &gt; assume-role-output.txt
+  export AWS_ACCESS_KEY_ID=`grep AccessKeyId assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+  export AWS_SECRET_ACCESS_KEY=`grep SecretAccessKey assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+  export AWS_SESSION_TOKEN=`grep SessionToken assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+
+  aws s3 sync data/output/ &quot;${temp_s3_location}${i}/&quot;
+done
+
+aws s3 sync &quot;${temp_s3_location}&quot; &quot;${output_s3_location}&quot;
+aws s3 rm &quot;${temp_s3_location}&quot; --recursive</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
