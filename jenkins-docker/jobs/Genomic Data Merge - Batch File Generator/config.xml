@@ -1,0 +1,61 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Temp job to create file(s) that the Merge jobs&#xd;
+&#xd;
+We can eliminate this job by using tags on our objects to track the status of the current stage process.  Looking into that a bit - Tom</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>true</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cat &lt;&lt;EOF &gt; merge_batch_s3_locations.txt
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001725/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001732/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001730/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001466.c1/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001466.c2/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001466.c3/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001729.c2/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001682/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001514.c1/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001514.c2/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001728.c2/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001544.c1/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001040.c1/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001662/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001608/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001598.c1/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001024.c1/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001624.c1/
+s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001727.c2/
+EOF
+
+# following used to initialize the batch
+# s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001661/
+# s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001726/
+
+</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>merge_batch_s3_locations.txt</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>false</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+      <followSymlinks>false</followSymlinks>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+  <buildWrappers/>
+</project>

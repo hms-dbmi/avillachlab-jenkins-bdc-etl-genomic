@@ -1,0 +1,63 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.FileParameterDefinition>
+          <name>vcfIndex.tsv</name>
+        </hudson.model.FileParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>JDK-18</jdk>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>phsnum=$(head -n 1 vcfIndex.tsv | tr -d &apos;&quot;&apos;)
+
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X
+
+do
+	
+    mkdir -p chr${i}/
+    mkdir -p new/chr${i}/
+    
+	aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz &amp;
+    wait
+	
+	bgzip -d --threads 40 chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz &amp;
+	wait
+    #creates files for the headers, then sort the rest of the lines by position
+	grep &quot;#&quot; chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf &gt;  chr${i}/${phsnum}.chr${i}.headers.vcf &amp;
+	grep -v &quot;#&quot; chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf | sort -k2n &gt;  chr${i}/${phsnum}.chr${i}.resort.vcf &amp;
+	wait
+    
+    mkdir -p new/chr${i}/
+
+	cat chr${i}/${phsnum}.chr${i}.headers.vcf &gt;&gt; new/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf &amp;
+	wait
+	cat chr${i}/${phsnum}.chr${i}.resort.vcf &gt;&gt; new/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf &amp;
+	wait
+
+	bgzip -fi --threads 40 new/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf  &amp;
+	wait
+	
+	aws s3 cp new/chr${i}/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/${phsnum}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz &amp;
+	wait
+
+done</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

@@ -1,0 +1,261 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Temp job to create file(s) that manage the partitions&#xd;
+&#xd;
+Stepping it up a notch and using a json file instead of a flat csv file.&#xd;
+&#xd;
+</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cat &lt;&lt;EOF &gt; partition_config.json
+{
+  &quot;partitions&quot;: [
+  	{
+      &quot;partition_name&quot;: &quot;partition5&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000921.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c3/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c4/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c5/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c6/&quot;,        
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001600/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001345/&quot;
+      ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition6&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/open_access-1000Genomes/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001395.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001395.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001293.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001293.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001682/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001662.c2/&quot;
+       ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition7&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001211.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001211.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001472.c1/&quot;
+      ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition8&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000974.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000974.c2/&quot;
+      ]
+    }
+  ]
+}
+EOF</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>cat &lt;&lt;EOF &gt; partition_master_config.json
+{
+  &quot;partitions&quot;: [
+    {
+      &quot;partition_name&quot;: &quot;partition1&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001237.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001237.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001368.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001368.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001368.c3/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001368.c4/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001412.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001412.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000954/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000993.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000993.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001599/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001927.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001927.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001927.c3/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001927.c4/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000920/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000997/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001032/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000956/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001359/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001598.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001024.c1/&quot;
+      ]
+    },
+        {
+      &quot;partition_name&quot;: &quot;partition2&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001435/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001217/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000988/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001466.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001466.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001466.c3/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001189.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001062.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001062.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000946.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001732/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001730/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001729.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001728.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001727.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001725/&quot;
+      ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition3&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001387/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000964.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000964.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000964.c3/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000964.c4/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001416.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001416.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001735.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001735.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001726.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001606.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001547.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001543.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001514.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001514.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001446.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001446.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001661/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001624.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001402/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001215/&quot;
+      ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition4&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001218/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001434/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001468/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001605/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001604/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001603/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001602/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001601/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001546/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001545/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001608/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001544.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001542/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001467/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001207/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001143/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001040.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000972/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001644.edited/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001933.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001515/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c2/&quot;
+      ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition5&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000921.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c3/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c4/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c5/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c6/&quot;,        
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001600/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001345/&quot;
+      ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition6&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/open_access-1000Genomes/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001395.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001395.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001293.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001293.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001682/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001662.c2/&quot;
+       ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition7&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001211.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001211.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001472.c1/&quot;
+      ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition8&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000974.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000974.c2/&quot;
+      ]
+    }
+  ]
+}
+EOF</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+# backup configs on s3
+echo &quot;backup configs on s3&quot;
+jq &apos;[.partitions[] | 
+      {partition_name, 
+       duplicate_s3_locations: ([.s3_locations[]] | group_by(.) | map(select(length &gt; 1) | .[0]))}
+    ] | map(select(.duplicate_s3_locations | length &gt; 0))&apos; partition_config.json
+aws --version
+
+jq &apos;[.partitions[] | 
+      {partition_name, 
+       duplicate_s3_locations: ([.s3_locations[]] | group_by(.) | map(select(length &gt; 1) | .[0]))}
+    ] | map(select(.duplicate_s3_locations | length &gt; 0))&apos; partition_master_config.json
+aws --version
+
+
+aws s3 cp partition_config.json s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/config/
+aws s3 cp partition_master_config.json s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/config/</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>partition_config.json, partition_master_config.json</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>false</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+      <followSymlinks>false</followSymlinks>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+  <buildWrappers/>
+</project>

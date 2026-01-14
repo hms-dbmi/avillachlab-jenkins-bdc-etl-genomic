@@ -1,0 +1,55 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>This will build a new release structure from the current s3 location.&#xd;
+&#xd;
+we are using a date for the release atm.  &#xd;
+&#xd;
+If you add a new partition you will currently need to add another line to the job to copy it.&#xd;
+&#xd;
+We could probably just use the s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/ location instead of the build.  </description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>s3_destination_prefix</name>
+          <description>S3 destination prefix.  
+
+Update the date with the release date associated with the release being built. ( or close approx date ).</description>
+          <defaultValue>s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/2025-01-29/</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+aws sts assume-role --duration-seconds 3600 --role-arn arn:aws:iam::736265540791:role/dbgap-etl --role-session-name &quot;s3-test&quot; &gt; assume-role-output.txt
+export AWS_ACCESS_KEY_ID=`grep AccessKeyId assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+export AWS_SECRET_ACCESS_KEY=`grep SecretAccessKey assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+export AWS_SESSION_TOKEN=`grep SessionToken assume-role-output.txt | cut -d &apos;:&apos; -f 2 | sed &quot;s/[ ,\&quot;]//g&quot;`
+
+aws s3 cp s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/partition1/ ${s3_destination_prefix}/batch1/ --recursive --metadata-directive REPLACE
+aws s3 cp s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/partition2/ ${s3_destination_prefix}/batch2/ --recursive --metadata-directive REPLACE
+aws s3 cp s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/partition3/ ${s3_destination_prefix}/batch3/ --recursive --metadata-directive REPLACE
+aws s3 cp s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/partition4/ ${s3_destination_prefix}/batch4/ --recursive --metadata-directive REPLACE
+aws s3 cp s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/partition5/ ${s3_destination_prefix}/batch5/ --recursive --metadata-directive REPLACE
+aws s3 cp s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/partition6/ ${s3_destination_prefix}/batch6/ --recursive --metadata-directive REPLACE
+aws s3 cp s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/partition7/ ${s3_destination_prefix}/batch7/ --recursive --metadata-directive REPLACE
+aws s3 cp s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/partition8/ ${s3_destination_prefix}/batch8/ --recursive --metadata-directive REPLACE</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
