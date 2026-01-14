@@ -1,0 +1,125 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1360.vc6700e3136f5">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f">
+      <jobProperties/>
+      <triggers/>
+      <parameters>
+        <string>DATA_PARTITION_S3_PREFIX</string>
+        <string>TEMP_S3_LOCATION</string>
+      </parameters>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description>Instructions for new batch:&#xd;
+In order to run this against a new batch first run the ETL - Merge Genomic Dataset job with two studies to prime the new batch.&#xd;
+&#xd;
+Once the new batch is created this pipeline can be run using a list of s3 locations in order to bulk load.  Currently only handling provisioning a single batch.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>DATA_PARTITION_S3_PREFIX</name>
+          <description>S3 prefix for the output partition</description>
+          <defaultValue>s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>TEMP_S3_LOCATION</name>
+          <description>Temporary S3 location</description>
+          <defaultValue>s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/temp5/</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3812.vc3031a_b_a_c955">
+    <script>pipeline {
+    agent any
+
+    parameters {
+        string(name: &apos;DATA_PARTITION_S3_PREFIX&apos;, defaultValue: &apos;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/releases/current/&apos;, description: &apos;S3 prefix for the output partition&apos;)
+        string(name: &apos;TEMP_S3_LOCATION&apos;, defaultValue: &apos;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/temp5/&apos;, description: &apos;Temporary S3 location&apos;)
+    }
+
+    stages {
+        
+        stage(&apos;Process Partitions&apos;) {
+            steps {
+                script {
+
+                    def artifactPath = &quot;${JENKINS_HOME}/workspace/Genomic Data Merge - Batch File Generator ( JSON )/partition_config.json&quot;
+                    // Check if the file exists
+                    if (!fileExists(artifactPath)) {
+                        error &quot;Artifact ${artifactName} not found.&quot;
+                    }
+                    // Read the JSON configuration
+                    def partitions = sh(script: &quot;jq -c &apos;.partitions[]&apos; &apos;$artifactPath&apos;&quot;, returnStdout: true).trim().split(&apos;\n&apos;)
+
+                    //def partitions = partitionConfig.partitions
+                    
+                    if (partitions.length == 0) {
+                        error &quot;No partitions found in the configuration.&quot;
+                    }
+
+                    partitions.each { partitionJson -&gt;
+                        def partitionName = sh(script: &quot;echo &apos;${partitionJson}&apos; | jq -r &apos;.partition_name&apos;&quot;, returnStdout: true).trim()
+                        def s3Locations = sh(script: &quot;echo &apos;${partitionJson}&apos; | jq -r &apos;.s3_locations[]&apos;&quot;, returnStdout: true).trim().split(&apos;\n&apos;)
+
+                        println &quot;Processing partition: ${partitionName}&quot;
+                        println &quot;Number of S3 locations found: ${s3Locations.size()}&quot;
+
+                        if (s3Locations.size() &gt;= 2) {
+                            def dataset1S3Location = s3Locations[0]
+                            def dataset2S3Location = s3Locations[1]
+                            def outputS3Location = &quot;${params.DATA_PARTITION_S3_PREFIX}${partitionName}/&quot;
+
+                            println &quot;Triggering job with the following parameters:&quot;
+                            println &quot;dataset1_s3_location: ${dataset1S3Location}&quot;
+                            println &quot;dataset2_s3_location: ${dataset2S3Location}&quot;
+                            println &quot;output_s3_location: ${outputS3Location}&quot;
+                            println &quot;temp_s3_location: ${params.TEMP_S3_LOCATION}&quot;
+
+                            build job: &apos;ETL - Merge Genomic Dataset v4&apos;, parameters: [
+                                string(name: &apos;dataset1_s3_location&apos;, value: dataset1S3Location),
+                                string(name: &apos;dataset2_s3_location&apos;, value: dataset2S3Location),
+                                string(name: &apos;output_s3_location&apos;, value: outputS3Location),
+                                string(name: &apos;temp_s3_location&apos;, value: params.TEMP_S3_LOCATION)
+                            ]
+                            
+                            // Process remaining S3 locations
+                            s3Locations.each { currentS3Location -&gt;
+                                if (currentS3Location != dataset1S3Location &amp;&amp; currentS3Location != dataset2S3Location) {
+                                    println &quot;Processing remaining S3 location: ${currentS3Location}&quot;
+
+                                    build job: &apos;ETL - Merge Genomic Dataset v4&apos;, parameters: [
+                                        string(name: &apos;dataset1_s3_location&apos;, value: outputS3Location),
+                                        string(name: &apos;dataset2_s3_location&apos;, value: currentS3Location),
+                                        string(name: &apos;output_s3_location&apos;, value: outputS3Location),
+                                        string(name: &apos;temp_s3_location&apos;, value: params.TEMP_S3_LOCATION)
+                                    ]
+                                }
+                            }
+                        } else {
+                            println &quot;Partition ${partitionName} has less than 2 S3 locations, skipping...&quot;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo &quot;Pipeline execution completed.&quot;
+        }
+    }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

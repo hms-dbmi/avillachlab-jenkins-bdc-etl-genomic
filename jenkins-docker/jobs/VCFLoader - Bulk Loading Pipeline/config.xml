@@ -1,0 +1,73 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1360.vc6700e3136f5">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description>This pipeline is dependent on the &apos;VCFLoader - Batch File Generator&apos; job.&#xd;
+&#xd;
+Ensure you have the correct s3 locations for the VCF Indexes you want to process before building the job.&#xd;
+&#xd;
+This pipeline will iterate over the list of indexes in the batch file and pass them each to the &apos;ETL - NewVCFLoader by chromosome v4.1&apos; job.&#xd;
+&#xd;
+</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3812.vc3031a_b_a_c955">
+    <script>pipeline {
+    agent any
+
+    stages {
+        stage(&apos;Trigger Batch File Generator&apos;) {
+            steps {
+                script {
+                    // Trigger the VCFLoader Batch File Generator job and capture the build number
+                    def buildInfo = build job: &apos;VCFLoader - Batch File Generator&apos;, propagate: false
+                    def buildNumber = buildInfo.getNumber()
+                    
+                    // Wait for the build to complete and ensure it&apos;s successful
+                
+                    def buildResult = buildInfo.getResult()
+                    if (buildResult != &apos;SUCCESS&apos;) {
+                        error &quot;Failed to trigger VCFLoader Batch File Generator job successfully.&quot;
+                    }
+                }
+            }
+        }
+
+        stage(&apos;Read Artifact and Trigger ETL Jobs&apos;) {
+            steps {
+                script {
+                    // Define the path to the vcf_indexes_batch.txt artifact in the workspace
+                    def artifactPath = &quot;${JENKINS_HOME}/workspace/VCFLoader - Batch File Generator/vcf_indexes_batch.txt&quot;
+                    
+                    // Read the content of the artifact
+                    def vcfIndexes = readFile artifactPath
+                    // Split the content by line
+                    def vcfIndexList = vcfIndexes.split(&apos;\n&apos;)
+
+                    // Iterate over each S3 URI and trigger the ETL - NewVCFLoader by chromosome v4 job sequentially
+                    vcfIndexList.each { vcfIndex -&gt;
+                        println vcfIndex
+                        if (vcfIndex.trim()) { // Skip empty lines
+                            build job: &apos;ETL - NewVCFLoader by chromosome v4.1&apos;, parameters: [
+                                string(name: &apos;vcfIndex&apos;, value: vcfIndex.trim())
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

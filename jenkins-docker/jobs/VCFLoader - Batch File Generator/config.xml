@@ -1,0 +1,43 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Temp job to create file(s) that the VCF Loading jobs can use to process a set of studies.&#xd;
+&#xd;
+We can eliminate this job by using tags on our objects to track the status of the current stage process.  Looking into that a bit - Tom</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cat &lt;&lt;EOF &gt; vcf_indexes_batch.txt
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs000974.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs000974.c2_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001211.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001211.c2_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001662.c2_vcfIndex.tsv
+EOF
+
+</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>vcf_indexes_batch.txt</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>false</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+      <followSymlinks>false</followSymlinks>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+  <buildWrappers/>
+</project>
