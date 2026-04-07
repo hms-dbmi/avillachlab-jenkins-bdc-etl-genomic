@@ -1,0 +1,160 @@
+<?xml version="1.1" encoding="UTF-8"?><project>
+  <actions/>
+  <description/>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>javaOpts</name>
+          <defaultValue>-Xmx10g</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>vcfIndex</name>
+          <description>S3 location of vcf index file</description>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@5.2.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/hms-dbmi/pic-sure-hpds</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>b2c6346992da6de0d4e546ca019cb629d0ebd666</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="empty-list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>JDK-18</jdk>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Maven>
+      <targets>clean install -DskipTests</targets>
+      <mavenName>Maven 3.9.5</mavenName>
+      <usePrivateRepository>false</usePrivateRepository>
+      <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+      <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+      <injectBuildVariables>false</injectBuildVariables>
+    </hudson.tasks.Maven>
+    <hudson.tasks.Shell>
+      <command>ls -l
+
+mkdir -p data
+
+aws s3 cp ${vcfIndex} vcfIndex.tsv
+
+studyId=$(head -n 1 vcfIndex.tsv | tr -d '"')
+
+rm -rf data/${studyId}
+mkdir -p data/${studyId}
+mkdir -p data/${studyId}/all
+mkdir -p data/${studyId}/merged
+mkdir -p data/vcfInput
+
+for i in $(seq 1 22); do
+  sed -n "2p" vcfIndex.tsv &gt; "data/${studyId}/chr${i}VcfIndex.tsv"
+  lineNum=$((i + 2))
+  sed -n "${lineNum}p" vcfIndex.tsv &gt;&gt; "data/${studyId}/chr${i}VcfIndex.tsv"
+done
+
+sed -n "2p" vcfIndex.tsv &gt; "data/${studyId}/chrXVcfIndex.tsv"
+sed -n "25p" vcfIndex.tsv &gt;&gt; "data/${studyId}/chrXVcfIndex.tsv"
+
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr1.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr2.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr3.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr4.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr5.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr6.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr7.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr8.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr9.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr10.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr11.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr12.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr13.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr14.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr15.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr16.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr17.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr18.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr19.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr20.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr21.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chr22.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+aws s3 cp s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/hpds_vcfs/modifiers_removed/10/${studyId}.chrX.annotated_remove_modifiers.hpds.vcf.gz data/vcfInput/
+
+for i in X 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22; do
+	#rm -f data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf
+	gunzip data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz
+        
+    #creates files for the headers, then sort the rest of the lines by position
+    grep "#" data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf &gt;  data/vcfInput/${studyId}.chr${i}.headers.vcf
+	grep -v "#" data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf | sort -k2n &gt;&gt;  data/vcfInput/${studyId}.chr${i}.resort.vcf
+    
+	cat data/vcfInput/${studyId}.chr${i}.headers.vcf &gt; data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf
+	rm data/vcfInput/${studyId}.chr${i}.headers.vcf
+	cat data/vcfInput/${studyId}.chr${i}.resort.vcf &gt;&gt; data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf
+	rm data/vcfInput/${studyId}.chr${i}.resort.vcf
+	bgzip -c data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf &gt; data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf.gz
+    rm data/vcfInput/${studyId}.chr${i}.annotated_remove_modifiers.hpds.vcf
+done</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>studyId=$(head -n 1 vcfIndex.tsv | tr -d '"')
+
+i='X'
+
+mkdir -p "data/${studyId}/${i}/all"
+mkdir -p "data/${studyId}/${i}/merged"
+
+java ${javaOpts} -jar docker/pic-sure-hpds-etl/VCFLocalLoader-jar-with-dependencies.jar data/${studyId}/chr${i}VcfIndex.tsv data/${studyId}/${i}/all data/${studyId}/${i}/merged
+### assume etl role
+unset AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+aws sts assume-role --duration-seconds 3600 --role-arn arn:aws:iam::736265540791:role/dbgap-etl --role-session-name "s3-test" &gt; assume-role-output.txt
+export AWS_ACCESS_KEY_ID=`grep AccessKeyId assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+export AWS_SECRET_ACCESS_KEY=`grep SecretAccessKey assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+export AWS_SESSION_TOKEN=`grep SessionToken assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+
+aws s3 sync "data/${studyId}/${i}/all" "s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/${studyId}/${i}/"
+
+
+for i in $(seq 1 22); do
+  mkdir -p "data/${studyId}/${i}/all"
+  mkdir -p "data/${studyId}/${i}/merged"
+
+  java ${javaOpts} -jar docker/pic-sure-hpds-etl/VCFLocalLoader-jar-with-dependencies.jar data/${studyId}/chr${i}VcfIndex.tsv data/${studyId}/${i}/all data/${studyId}/${i}/merged
+  ### assume etl role
+  unset AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+  aws sts assume-role --duration-seconds 3600 --role-arn arn:aws:iam::736265540791:role/dbgap-etl --role-session-name "s3-test" &gt; assume-role-output.txt
+  export AWS_ACCESS_KEY_ID=`grep AccessKeyId assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+  export AWS_SECRET_ACCESS_KEY=`grep SecretAccessKey assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+  export AWS_SESSION_TOKEN=`grep SessionToken assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+
+  aws s3 sync "data/${studyId}/${i}/all" "s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/${studyId}/${i}/"
+done
+
+
+rm -rf data/${studyId}
+rm -rf data/vcfInput/${studyId}*</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

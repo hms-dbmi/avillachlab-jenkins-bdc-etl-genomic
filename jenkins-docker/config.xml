@@ -1,72 +1,21 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <hudson>
   <disabledAdministrativeMonitors>
-    <string>jenkins.diagnostics.RootUrlNotSetMonitor</string>
     <string>jenkins.diagnostics.SecurityIsOffMonitor</string>
+    <string>jenkins.diagnostics.RootUrlNotSetMonitor</string>
+    <string>hudson.util.DoubleLaunchChecker</string>
   </disabledAdministrativeMonitors>
-  <version>2.204.2</version>
-  <installStateName>RUNNING</installStateName>
-  <numExecutors>5</numExecutors>
+  <version>2.528.3</version>
+  <numExecutors>150</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
-  <authorizationStrategy class="com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy">
-    <roleMap type="globalRoles">
-      <role name="admin" pattern=".*">
-        <permissions>
-          <permission>hudson.model.View.Delete</permission>
-          <permission>hudson.model.Computer.Connect</permission>
-          <permission>hudson.model.Run.Delete</permission>
-          <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains</permission>
-          <permission>hudson.model.Computer.Create</permission>
-          <permission>hudson.model.View.Configure</permission>
-          <permission>hudson.model.Computer.Build</permission>
-          <permission>hudson.model.Item.Configure</permission>
-          <permission>hudson.model.Hudson.Administer</permission>
-          <permission>hudson.model.Item.Cancel</permission>
-          <permission>hudson.model.Item.Read</permission>
-          <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View</permission>
-          <permission>hudson.model.Computer.Delete</permission>
-          <permission>hudson.model.Item.Build</permission>
-          <permission>org.jenkins.plugins.lockableresources.LockableResourcesManager.Unlock</permission>
-          <permission>hudson.scm.SCM.Tag</permission>
-          <permission>hudson.model.Item.Move</permission>
-          <permission>hudson.model.Item.Discover</permission>
-          <permission>hudson.model.Hudson.Read</permission>
-          <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update</permission>
-          <permission>hudson.model.Item.Create</permission>
-          <permission>hudson.model.Item.Workspace</permission>
-          <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete</permission>
-          <permission>hudson.model.Computer.Provision</permission>
-          <permission>hudson.model.Run.Replay</permission>
-          <permission>hudson.model.View.Read</permission>
-          <permission>org.jenkins.plugins.lockableresources.LockableResourcesManager.View</permission>
-          <permission>hudson.model.View.Create</permission>
-          <permission>hudson.model.Item.Delete</permission>
-          <permission>hudson.model.Computer.Configure</permission>
-          <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create</permission>
-          <permission>hudson.model.Computer.Disconnect</permission>
-          <permission>org.jenkins.plugins.lockableresources.LockableResourcesManager.Reserve</permission>
-          <permission>hudson.model.Run.Update</permission>
-        </permissions>
-        <assignedSIDs>
-          <sid>jenkins_role_BDC_dev_admin</sid>
-        </assignedSIDs>
-      </role>
-      <role name="readonly" pattern=".*">
-        <permissions>
-          <permission>hudson.model.Hudson.Read</permission>
-          <permission>hudson.model.Item.Read</permission>
-          <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View</permission>
-          <permission>hudson.model.View.Read</permission>
-        </permissions>
-        <assignedSIDs>
-          <sid>jenkins_role_BDC_dev_readonly</sid>
-        </assignedSIDs>
-      </role>
-    </roleMap>
-    <roleMap type="slaveRoles"/>
-    <roleMap type="projectRoles"/>
+  <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+    <denyAnonymousReadAccess>true</denyAnonymousReadAccess>
   </authorizationStrategy>
+  <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
+    <disableSignup>true</disableSignup>
+    <enableCaptcha>false</enableCaptcha>
+  </securityRealm>
   <disableRememberMe>false</disableRememberMe>
   <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
   <workspaceDir>$JENKINS_HOME/workspace/$ITEM_FULL_NAME</workspaceDir>
@@ -74,8 +23,8 @@
   <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
   <jdks>
     <jdk>
-      <name>JDK-11</name>
-      <home>/usr/lib/jvm/java-11-openjdk-amd64/</home>
+      <name>JDK-21</name>
+      <home>/opt/java/openjdk/</home>
       <properties/>
     </jdk>
   </jdks>
@@ -123,10 +72,11 @@
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView/jobNames/comparator"/>
         <string>Check For Updates</string>
         <string>Deployment Pipeline</string>
         <string>Swap Stacks</string>
+        <string>Update Git With Latest Jobs and Config - pipeline</string>
       </jobNames>
       <jobFilters/>
       <columns>
@@ -147,7 +97,7 @@
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView/jobNames/comparator"/>
         <string>Create stack_variables.tf Files</string>
         <string>Docker-AWSCLI</string>
         <string>Update Fence Client Credentials</string>
@@ -174,7 +124,7 @@
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView/jobNames/comparator"/>
         <string>Await Initialization</string>
         <string>Backup Jenkins Home</string>
         <string>biodatacatalyst-ui</string>
@@ -205,6 +155,84 @@
       </columns>
       <recurse>false</recurse>
     </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>VCFLoader and Release Publishing</name>
+      <description>This view is used to Manage the &quot;VCFLoader&quot; stage 
+All legacy and current jobs are shown atm whiile it is ported in.
+
+Follow gitbook instructions for VCFLoader.
+</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="java.lang.String$CaseInsensitiveComparator"/>
+        <string>Build new release</string>
+        <string>Clean batch s3 objects</string>
+        <string>ETL - Merge Genomic Dataset v4</string>
+        <string>ETL - Merge Genomic Dataset v4 Debugging</string>
+        <string>ETL - Merge Genomic Dataset v5</string>
+        <string>ETL - NewVCFLoader by chromosome batch</string>
+        <string>ETL - NewVCFLoader by chromosome TEST 1k genomes</string>
+        <string>ETL - NewVCFLoader by chromosome v4</string>
+        <string>ETL - NewVCFLoader by chromosome v4.1</string>
+        <string>ETL - NewVCFLoader by chromosome v4.1 debug</string>
+        <string>ETL - NewVCFLoader by chromosome v5 (with variant metadata)</string>
+        <string>ETL - VCF Pre-load processing</string>
+        <string>ETL - VCFIndex Generator</string>
+        <string>Genomic Data Merge - Batch File Generator</string>
+        <string>Genomic Data Merge - Batch File Generator ( JSON )</string>
+        <string>Genomic Data Merge - Initialize Partition</string>
+        <string>Genomic Data Merge - Pipeline</string>
+        <string>Genomic Data Merge - Pipeline ( JSON )</string>
+        <string>Genomic Data Merge - Pipeline ( JSON ) - backup</string>
+        <string>VCFLoader - Batch File Generator</string>
+        <string>VCFLoader - Bulk Loading Pipeline</string>
+        <string>VCFLoader - List VCF Indexes</string>
+        <string>VCFLoader - QC - List Bucket Post Processing</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Nextflow</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="java.lang.String$CaseInsensitiveComparator" reference="../../../listView[5]/jobNames/comparator"/>
+        <string>Genomic ETL - Cancel Fleet Request</string>
+        <string>Genomic ETL - Create Configuration Files for EC2</string>
+        <string>Genomic ETL - Nextflow Annotation Pipeline</string>
+        <string>Genomic ETL - Nextflow Annotation Pipeline (Large)</string>
+        <string>Genomic ETL - Stand Up Nextflow EC2</string>
+        <string>Genomic ETL - Stand Up Nextflow EC2 (Large)</string>
+        <string>Genomic ETL - Stand Up Nextflow EC2 (NonCom)</string>
+        <string>Genomic ETL - Terminate and Clean Up Annotation Pipeline EC2</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
   </views>
   <primaryView>Deployment</primaryView>
   <slaveAgentPort>50000</slaveAgentPort>
@@ -219,7 +247,7 @@
         <unserializable-parents/>
         <tree-map>
           <default>
-            <comparator class="hudson.util.CaseInsensitiveComparator"/>
+            <comparator class="java.lang.String$CaseInsensitiveComparator" reference="../../../../../../views/listView[5]/jobNames/comparator"/>
           </default>
           <int>7</int>
           <string>arn_role_app</string>
@@ -228,17 +256,17 @@
           <string></string>
           <string>arn_role_data</string>
           <string></string>
-          <string>stack_s3_bucket</string>
-          <string>avillach-biodatacatalyst-deployments-3drb48r</string>
           <string>avillachlab_release_control_repo</string>
           <string>https://github.com/hms-dbmi/avillachlab-jenkins-dev-release-control-integration</string>
-          <string>git_branch_avillachlab_jenkins_dev_release_control</string>
-          <string>paul-non-FISMA</string>
           <string>aws_account_app</string>
           <string></string>
-
+          <string>git_branch_avillachlab_jenkins_dev_release_control</string>
+          <string>paul-non-FISMA</string>
+          <string>stack_s3_bucket</string>
+          <string>avillach-biodatacatalyst-deployments-3drb48r</string>
         </tree-map>
       </envVars>
     </hudson.slaves.EnvironmentVariablesNodeProperty>
   </globalNodeProperties>
+  <nodeRenameMigrationNeeded>true</nodeRenameMigrationNeeded>
 </hudson>

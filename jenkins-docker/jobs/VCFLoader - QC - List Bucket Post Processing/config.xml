@@ -1,0 +1,34 @@
+<?xml version="1.1" encoding="UTF-8"?><project>
+  <actions/>
+  <description/>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+
+aws sts assume-role --duration-seconds 3600 --role-arn arn:aws:iam::736265540791:role/dbgap-etl --role-session-name "s3-test" &gt; assume-role-output.txt
+export AWS_ACCESS_KEY_ID=`grep AccessKeyId assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+export AWS_SECRET_ACCESS_KEY=`grep SecretAccessKey assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+export AWS_SESSION_TOKEN=`grep SessionToken assume-role-output.txt | cut -d ':' -f 2 | sed "s/[ ,\"]//g"`
+
+s3bucket="s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/"
+s3root="s3://avillach-73-bdcatalyst-etl/"
+aws s3 ls ${s3bucket} | awk -v root="$s3bucket" '{print root $2}'
+
+aws s3 ls s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000921.c2/12/
+</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

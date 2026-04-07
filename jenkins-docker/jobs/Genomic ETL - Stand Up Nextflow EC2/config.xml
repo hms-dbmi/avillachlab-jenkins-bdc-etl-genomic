@@ -4,7 +4,7 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@332.va_1ee476d8f6d">
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@338.va_0a_b_50e29397">
       <autoRebuild>false</autoRebuild>
       <rebuildDisabled>false</rebuildDisabled>
     </com.sonyericsson.rebuild.RebuildSettings>
@@ -95,7 +95,7 @@
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@5.0.2">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@5.8.1">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -121,7 +121,7 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 cd genomic-etl-infrastructure-nextflow
-
+export start=`date +&quot;%Y-%m-%dT%H:%M:%SZ&quot;`
 export AWS_MAX_ATTEMPTS=9
 
 aws s3 cp s3://${output_s3_bucket}/genomic-etl/deployment_state_metadata/${study_id}${consent_group_tag}/${chrom_number}/genomic_etl_variables.tf .
@@ -148,23 +148,25 @@ export instanceId=`aws ec2 describe-spot-fleet-instances --spot-fleet-request-id
 done
 
 echo first instance id ${instanceId}
+#check if the current active instance has the &apos;annotationcomplete&apos; tag which indicates its finished processing
 while [[ -z $(aws --region=us-east-1 ec2 describe-tags --filters Name=resource-id,Values=&quot;${instanceId}&quot; | grep AnnotationComplete) ]]
 do
-#!/bin/bash
 
-export newInstanceId=`aws ec2 describe-spot-fleet-instances --spot-fleet-request-id ${fleetId} --query &quot;ActiveInstances[?InstanceHealth==&apos;healthy&apos;].InstanceId&quot; --region us-east-1 --output text`
+#gets the most recent &apos;launched&apos; event and pulls the instance id, then compares it to the current instance id it had recorded
+export newInstanceId=`aws ec2 describe-spot-fleet-request-history --event-type instanceChange --spot-fleet-request-id ${fleetId} --start-time ${start} --query &quot;reverse(sort_by(HistoryRecords, &amp;Timestamp))[?EventInformation.EventSubType==&apos;launched&apos;].EventInformation.InstanceId | [0]&quot; --output text --region us-east-1 || &apos;&apos;`
 if [ -z ${newInstanceId} ]
 then
-echo &quot;Instance id changed. Waiting for new instance id&quot;;
+echo &quot;Cannot find instance id. If this error repeats there may be an issue with the spot instance&quot;;
 elif [ &quot;${newInstanceId}&quot; != &quot;${instanceId}&quot; ]
 then
-echo &quot;Instance id changed. New instance id is &quot; ${newInstanceId};
+export restartCount=$(($restartCount+1))
+echo &quot;Instance id changed. New instance id is ${newInstanceId} and server has been restarted $restartCount times&quot;;
 export instanceId=${newInstanceId};
 else
-echo &quot;Instance stable. Annotation in process&quot;;
+echo &quot;Instance $instanceId has not changed. Annotation in process&quot;;
 fi
 
-sleep 300
+sleep 600
 
 done
 export annostatus=`aws --region=us-east-1 ec2 describe-tags --filters Name=resource-id,Values=&quot;${instanceId}&quot; Name=key,Values=AnnotationComplete --query &quot;Tags[?Value == &apos;true&apos;]&quot; --output text`
@@ -176,7 +178,8 @@ fi
 
 if ($terminate_on_completion)
 then
-export VOLUME_ID=$(aws ec2 describe-volumes --region=us-east-1 --filters Name=&apos;tag:label&apos;,Values=${study_id}${consent_group_tag}.chr${chrom_number} --query &quot;Volumes[*].VolumeId&quot; --output text) &amp;&amp; echo &quot;volume id is $VOLUME_ID&quot;
+export VOLUME_ID=`aws ec2 describe-volumes --region=us-east-1 --filters Name=&apos;tag:label&apos;,Values=${study_id}${consent_group_tag}.chr${chrom_number} --query &quot;Volumes[*].VolumeId&quot; --output text`
+echo &quot;volume id is $VOLUME_ID&quot;
 aws ec2 cancel-spot-fleet-requests --region us-east-1 --spot-fleet-request-ids ${fleetId} --terminate-instances || $(echo &apos;could not terminate&apos; &amp;&amp; exit 255)
 sleep 300
 aws ec2 detach-volume --region us-east-1 --volume-id $VOLUME_ID || echo &apos;volume already detached&apos; 
@@ -185,11 +188,6 @@ fi
 </command>
       <configuredLocalRules/>
       <unstableReturn>44</unstableReturn>
-    </hudson.tasks.Shell>
-    <hudson.tasks.Shell>
-      <command>#!/bin/bash
-</command>
-      <configuredLocalRules/>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

@@ -1,0 +1,49 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Temp job to create file(s) that the VCF Loading jobs can use to process a set of studies.&#xd;
+&#xd;
+We can eliminate this job by using tags on our objects to track the status of the current stage process.  Looking into that a bit - Tom</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@338.va_0a_b_50e29397">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cat &lt;&lt;EOF &gt; vcf_indexes_batch.txt
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001514.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001514.c2_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001608.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001402.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001435.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs000964.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs000964.c2_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs000964.c3_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs000964.c4_vcfIndex.tsv
+EOF</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>vcf_indexes_batch.txt</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>false</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+      <followSymlinks>false</followSymlinks>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+  <buildWrappers/>
+</project>
