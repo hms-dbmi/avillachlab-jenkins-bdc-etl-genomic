@@ -21,9 +21,8 @@ We can eliminate this job by using tags on our objects to track the status of th
   <builders>
     <hudson.tasks.Shell>
       <command>cat &lt;&lt;EOF &gt; vcf_indexes_batch.txt
-s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001546.c1_vcfIndex.tsv
-s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001604.c1_vcfIndex.tsv
-s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs002382.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001468.c1_vcfIndex.tsv
+s3://avillach-biodatacatalyst-deployments-3drb48r/genomic-etl/ingestion-indexes/phs001345.c1_vcfIndex.tsv
 EOF</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>

@@ -24,12 +24,12 @@ Stepping it up a notch and using a json file instead of a flat csv file.&#xd;
     <hudson.tasks.Shell>
       <command>cat &lt;&lt;EOF &gt; partition_config.json
 {
-  &quot;partitions&quot;: [    {
+  &quot;partitions&quot;: [ 
+    {
       &quot;partition_name&quot;: &quot;partition4&quot;,
       &quot;s3_locations&quot;: [
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001218/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001434.c1/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001468/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001605.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001604.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001603.c1/&quot;,
@@ -41,19 +41,34 @@ Stepping it up a notch and using a json file instead of a flat csv file.&#xd;
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001544.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001542/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001467/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001207/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001207.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001143/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001040.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000972/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001644.edited/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001933.c1/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001515/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001515.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs002382.c1/&quot;
       ]
+    },
+    {
+      &quot;partition_name&quot;: &quot;partition5&quot;,
+      &quot;s3_locations&quot;: [
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000921.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c3/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c4/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c5/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c6/&quot;,        
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001600.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs002038.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001468.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001345.c1/&quot;
+      ]
     }
-  
   ]
 }
 EOF</command>
@@ -79,13 +94,10 @@ EOF</command>
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000993.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001599.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001927.c1/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001927.c2/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001927.c3/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001927.c4/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000920/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000997.c1/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001032/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000956/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001032.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000956.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001359/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001598.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001024.c1/&quot;
@@ -105,10 +117,12 @@ EOF</command>
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001062.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000946.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001732.c2/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001730/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001730.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001729.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001728.c2/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001727.c2/&quot;
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001727.c2/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs002451.c1/&quot;,
+		&quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs002451.c2/&quot;
       ]
     },
     {
@@ -142,7 +156,6 @@ EOF</command>
       &quot;s3_locations&quot;: [
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001218/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001434.c1/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001468/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001605.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001604.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001603.c1/&quot;,
@@ -154,13 +167,13 @@ EOF</command>
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001544.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001542/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001467/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001207/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001207.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001143/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001040.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000972/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001644.edited/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001933.c1/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001515/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001515.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs000951.c2/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs002382.c1/&quot;
@@ -178,7 +191,8 @@ EOF</command>
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001607.c6/&quot;,        
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001600.c1/&quot;,
         &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs002038.c1/&quot;,
-        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001345/&quot;
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001468.c1/&quot;,
+        &quot;s3://avillach-73-bdcatalyst-etl/general/hpds/genomics_javabins/9b/v4.1/phs001345.c1/&quot;
       ]
     },
     {

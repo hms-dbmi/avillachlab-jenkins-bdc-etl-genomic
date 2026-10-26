@@ -142,7 +142,7 @@ export restartCount=0
 while [ -z ${instanceId} ]
 do
 
-sleep 120
+sleep 180
 export instanceId=`aws ec2 describe-spot-fleet-instances --spot-fleet-request-id ${fleetId} --query &quot;ActiveInstances[?InstanceHealth==&apos;healthy&apos;].InstanceId&quot; --region us-east-1 --output text`  &amp;&amp; echo &quot;instance id: ${instanceId} (if empty, still waiting)&quot;
 
 done
@@ -166,7 +166,7 @@ else
 echo &quot;Instance $instanceId has not changed. Annotation in process&quot;;
 fi
 
-sleep 600
+sleep 1800
 
 done
 export annostatus=`aws --region=us-east-1 ec2 describe-tags --filters Name=resource-id,Values=&quot;${instanceId}&quot; Name=key,Values=AnnotationComplete --query &quot;Tags[?Value == &apos;true&apos;]&quot; --output text`

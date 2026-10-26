@@ -79,8 +79,8 @@
           <name>freeze_number</name>
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
-              <string>9</string>
               <string>10</string>
+              <string>9</string>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
